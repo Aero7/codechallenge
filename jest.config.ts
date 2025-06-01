@@ -2,7 +2,6 @@ import type { Config } from 'jest'
 import { createDefaultPreset } from 'ts-jest'
 
 const config: Config = {
-  // [...]
   ...createDefaultPreset(),
   testEnvironment: 'jsdom',
   transform: {
@@ -15,6 +14,13 @@ const config: Config = {
       },
     ],
   },
+  moduleNameMapper: {
+    "\\.(css|less)$": "<rootDir>/styleMock.js"
+  },
+  coveragePathIgnorePatterns : [
+    "<rootDir>/node_modules/",
+    "styleMock.js",
+  ]
 }
 
 export default config
