@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 interface RegexInputProps {
+  field?: string
   value: string;
   onChange: (value: string) => void;
   regex?: RegExp;
@@ -9,6 +10,7 @@ interface RegexInputProps {
 }
 
 const RegexInput: React.FC<RegexInputProps> = ({
+  field = 'input',
   value,
   onChange,
   regex,
@@ -35,7 +37,7 @@ const RegexInput: React.FC<RegexInputProps> = ({
         data-testid="regex-input"
       />
       {!isValid && touched && (
-        <span style={{ color: 'red' }} data-testid="error-message">
+        <span style={{ color: 'red' }} data-testid={'error-message-' + field}>
           {errorMessage}
         </span>
       )}

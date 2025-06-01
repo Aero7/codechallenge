@@ -38,9 +38,9 @@ describe('ProviderForm', () => {
     REQUIRED_FIELDS.forEach((field) => {
       const input = screen.getByPlaceholderText(PROVIDER_INPUT_PLACEHOLDERS[field]);
       fireEvent.blur(input);
+      expect(screen.getByTestId('error-message-' + field)).toBeInTheDocument();
     });
 
-    expect(screen.getAllByTestId('error-message').length).toBe(3);
   });
 
   it('enables submit button only when all fields are valid and required fields are filled', () => {

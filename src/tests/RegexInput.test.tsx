@@ -29,7 +29,7 @@ describe('RegexInput', () => {
     );
     const input = screen.getByTestId('regex-input');
     fireEvent.blur(input);
-    expect(screen.getByTestId('error-message')).toHaveTextContent('Only letters allowed');
+    expect(screen.getByTestId('error-message-input')).toHaveTextContent('Only letters allowed');
   });
 
   it('does not show error message when input matches regex', () => {
@@ -44,6 +44,6 @@ describe('RegexInput', () => {
     );
     const input = screen.getByTestId('regex-input');
     fireEvent.blur(input);
-    expect(screen.queryByTestId('error-message')).toBeNull();
+    expect(screen.queryByTestId('error-message-input')).toBeNull();
   });
 });

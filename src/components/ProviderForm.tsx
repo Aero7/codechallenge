@@ -99,6 +99,7 @@ export default function ProviderForm({ onSubmit }: ProviderFormProps) {
             ).map((key) => (
                 <div key={key}>
                     <RegexInput
+                        field={key}
                         value={fields[key]}
                         onChange={handleChange(key)}
                         regex={regexes[key]}
