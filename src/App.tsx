@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import ProviderTable from './components/ProviderTable'
 import sampleProviders from './assets/sample-data.json';
+import ProviderForm from './components/ProviderForm';
 
 export interface ProviderData {
   last_name: string;
@@ -12,17 +13,11 @@ export interface ProviderData {
 }
 
 export default function App() {
-  const [providers, setProviders] = useState<ProviderData[]>([]);
+  const storedProvidersItem = localStorage.getItem('providers')
+  const initialProviders = storedProvidersItem !== null ? JSON.parse(storedProvidersItem) : sampleProviders;
+  const [providers, setProviders] = useState<ProviderData[]>(initialProviders);
 
   useEffect(() => {
-    const storedProviders = localStorage.getItem('providers')
-    const data = storedProviders ? JSON.parse(storedProviders) : null;
-    console.log('Loaded providers from localStorage:', data); // Debugging log
-    setProviders(data && data.length ? data : sampleProviders)
-  }, [])
-
-  useEffect(() => {
-    if (!providers || providers.length === 0) return;
     console.log('Saving providers to localStorage:', providers); // Debugging log
     localStorage.setItem('providers', JSON.stringify(providers))
   }, [providers])
@@ -30,7 +25,12 @@ export default function App() {
   return (
     <>
       <h1>Provider Directory</h1>
-      <ProviderTable providers={providers} />
+      <ProviderForm onSubmit={(provider) => setProviders([...providers, provider])} />
+      <ProviderTable providers={providers} removeProviders={providerIndices =>
+        setProviders(prev =>
+          prev.filter((_, idx) => !providerIndices.includes(idx))
+        )
+      } />
     </>
   )
 }

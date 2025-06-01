@@ -7,25 +7,29 @@ type SortDirection = 'asc' | 'desc';
 
 interface ProviderTableProps {
     providers: ProviderData[];
+    removeProviders: (indexes: number[]) => void;
 }
 
-export default function ProviderTable({ providers }: ProviderTableProps) {
+export default function ProviderTable({ providers, removeProviders }: ProviderTableProps) {
     const [filter, setFilter] = useState('');
     const [sortKey, setSortKey] = useState<SortKey>('last_name');
     const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+    const [selected, setSelected] = useState<Set<number>>(new Set());
 
-    const filteredData = providers.filter(
-        (provider) =>
-            provider.first_name.toLowerCase().includes(filter.toLowerCase()) ||
-            provider.last_name.toLowerCase().includes(filter.toLowerCase()) ||
-            provider.email_address.toLowerCase().includes(filter.toLowerCase()) ||
-            provider.specialty.toLowerCase().includes(filter.toLowerCase()) ||
-            provider.practice_name.toLowerCase().includes(filter.toLowerCase())
-    );
+    const filteredData = providers
+        .map((provider, idx) => ({ provider, idx }))
+        .filter(
+            ({ provider }) =>
+                provider.first_name.toLowerCase().includes(filter.toLowerCase()) ||
+                provider.last_name.toLowerCase().includes(filter.toLowerCase()) ||
+                provider.email_address.toLowerCase().includes(filter.toLowerCase()) ||
+                provider.specialty.toLowerCase().includes(filter.toLowerCase()) ||
+                provider.practice_name.toLowerCase().includes(filter.toLowerCase())
+        );
 
     const sortedData = [...filteredData].sort((a, b) => {
-        const aValue = a[sortKey].toLowerCase();
-        const bValue = b[sortKey].toLowerCase();
+        const aValue = a.provider[sortKey].toLowerCase();
+        const bValue = b.provider[sortKey].toLowerCase();
         if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
         if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
         return 0;
@@ -45,6 +49,31 @@ export default function ProviderTable({ providers }: ProviderTableProps) {
         return sortDirection === 'asc' ? ' ▲' : ' ▼';
     };
 
+    const handleSelect = (idx: number) => {
+        setSelected(prev => {
+            const newSet = new Set(prev);
+            if (newSet.has(idx)) {
+                newSet.delete(idx);
+            } else {
+                newSet.add(idx);
+            }
+            return newSet;
+        });
+    };
+
+    const handleSelectAll = () => {
+        if (selected.size === sortedData.length) {
+            setSelected(new Set());
+        } else {
+            setSelected(new Set(sortedData.map(row => row.idx)));
+        }
+    };
+
+    const handleRemove = () => {
+        removeProviders(Array.from(selected));
+        setSelected(new Set());
+    };
+
     return (
         <div>
             <h2>Provider Table</h2>
@@ -53,9 +82,19 @@ export default function ProviderTable({ providers }: ProviderTableProps) {
                 onChange={setFilter}
                 placeholder="Filter by any field"
             />
+
             <table>
                 <thead>
                     <tr>
+                        <th>
+                            <input
+                                type="checkbox"
+                                data-testid="select-all"
+                                checked={selected.size === sortedData.length && sortedData.length > 0}
+                                onChange={handleSelectAll}
+                                aria-label="Select all"
+                            />
+                        </th>
                         <th onClick={() => handleSort('last_name')} data-testid="header-last_name" style={{ cursor: 'pointer' }}>
                             Last Name{getSortIndicator('last_name')}
                         </th>
@@ -74,8 +113,17 @@ export default function ProviderTable({ providers }: ProviderTableProps) {
                     </tr>
                 </thead>
                 <tbody>
-                    {sortedData.map((provider, idx) => (
+                    {sortedData.map(({ provider, idx }) => (
                         <tr key={idx}>
+                            <td>
+                                <input
+                                    type="checkbox"
+                                    data-testid={`select-row-${idx}`}
+                                    checked={selected.has(idx)}
+                                    onChange={() => handleSelect(idx)}
+                                    aria-label={`Select row ${idx}`}
+                                />
+                            </td>
                             <td>{provider.last_name}</td>
                             <td>{provider.first_name}</td>
                             <td>{provider.email_address}</td>
@@ -85,6 +133,14 @@ export default function ProviderTable({ providers }: ProviderTableProps) {
                     ))}
                 </tbody>
             </table>
+
+            <button
+                onClick={handleRemove}
+                disabled={selected.size === 0}
+                data-testid="remove-btn"
+            >
+                Remove
+            </button>
         </div>
     );
-};
+}
