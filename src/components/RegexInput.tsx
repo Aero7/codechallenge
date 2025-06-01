@@ -5,6 +5,7 @@ interface RegexInputProps {
   value: string;
   onChange: (value: string) => void;
   regex?: RegExp;
+  required?: boolean;
   errorMessage?: string;
   placeholder?: string;
 }
@@ -14,6 +15,7 @@ const RegexInput: React.FC<RegexInputProps> = ({
   value,
   onChange,
   regex,
+  required = false,
   errorMessage = 'Invalid input',
   placeholder = '',
 }) => {
@@ -27,17 +29,19 @@ const RegexInput: React.FC<RegexInputProps> = ({
   };
 
   return (
-    <div>
+    <div className="input-group mb-3">
       <input
         type="text"
+        className="form-control"
         value={value}
         placeholder={placeholder}
         onChange={handleChange}
         onBlur={() => setTouched(true)}
         data-testid="regex-input"
+        required={required}
       />
       {!isValid && touched && (
-        <span style={{ color: 'red' }} data-testid={'error-message-' + field}>
+        <span className='invalid-feedback' data-testid={'error-message-' + field}>
           {errorMessage}
         </span>
       )}

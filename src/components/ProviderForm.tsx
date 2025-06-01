@@ -91,27 +91,34 @@ export default function ProviderForm({ onSubmit }: ProviderFormProps) {
         return !isValid(key) && touched[key];
     }
 
+    const inputFields = Object.keys(fields) as (keyof ProviderData)[];
+
     return (
-        <form onSubmit={handleSubmit}>
-            <h2>Add New Provider</h2>
-            {(
-                Object.keys(fields) as (keyof ProviderData)[]
-            ).map((key) => (
-                <div key={key}>
-                    <RegexInput
-                        field={key}
-                        value={fields[key]}
-                        onChange={handleChange(key)}
-                        regex={regexes[key]}
-                        errorMessage={errorShown(key) ? PROVIDER_INPUT_ERROR_MESSAGES[key] : ''}
-                        placeholder={PROVIDER_INPUT_PLACEHOLDERS[key]}
-                    />
+        <div id="provider-form">
+            <div className="card border-primary">
+                <div className="card-header">Create Provider</div>
+                <div className="card-body">
+                    <form onSubmit={handleSubmit}>
+                        {inputFields.map((key) => (
+                            <div key={key}>
+                                <RegexInput
+                                    field={key}
+                                    value={fields[key]}
+                                    onChange={handleChange(key)}
+                                    regex={regexes[key]}
+                                    errorMessage={errorShown(key) ? PROVIDER_INPUT_ERROR_MESSAGES[key] : ''}
+                                    placeholder={PROVIDER_INPUT_PLACEHOLDERS[key]}
+                                />
+                            </div>
+                        ))}
+
+                        <button type="submit" className='btn btn-primary' disabled={!allValid} data-testid="submit-btn">
+                            Submit
+                        </button>
+                    </form>
                 </div>
-            ))}
-            <button type="submit" disabled={!allValid} data-testid="submit-btn">
-                Submit
-            </button>
-        </form>
+            </div>
+        </div>
     );
 };
 
