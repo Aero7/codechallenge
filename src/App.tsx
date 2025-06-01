@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import ProviderTable from "./components/ProviderTable";
+import ProviderList from "./components/ProviderList";
 import sampleProviders from "./assets/sample-data.json";
 import ProviderForm from "./components/ProviderForm";
 
@@ -38,7 +38,7 @@ export default function App() {
         <ProviderForm
           onSubmit={(provider) => setProviders([...providers, provider])}
         />
-        <ProviderTable
+        <ProviderList
           providers={providers}
           onRemove={(indices) =>
             setProviders((prev) => prev.filter((_, i) => !indices.includes(i)))

@@ -1,24 +1,24 @@
 import "@testing-library/jest-dom";
 import { render, fireEvent, screen } from "@testing-library/react";
-import ProviderTable from "../components/ProviderTable";
+import ProviderList from "../components/ProviderList";
 import sampleProviders from "../assets/sample-data.json";
 
-describe("ProviderTable", () => {
+describe("ProviderList", () => {
   it("renders the table and input", () => {
-    render(<ProviderTable providers={sampleProviders} onRemove={jest.fn()} />);
+    render(<ProviderList providers={sampleProviders} onRemove={jest.fn()} />);
     expect(screen.getByText("Provider List")).toBeInTheDocument();
     expect(screen.getByTestId("regex-input")).toBeInTheDocument();
   });
 
   it("filters table rows based on input", () => {
-    render(<ProviderTable providers={sampleProviders} onRemove={jest.fn()} />);
+    render(<ProviderList providers={sampleProviders} onRemove={jest.fn()} />);
     const input = screen.getByTestId("regex-input");
     fireEvent.change(input, { target: { value: "Mike" } });
     expect(screen.getAllByText("Mike").length).toBeGreaterThan(0);
   });
 
   it("sorts by last name ascending and descending", () => {
-    render(<ProviderTable providers={sampleProviders} onRemove={jest.fn()} />);
+    render(<ProviderList providers={sampleProviders} onRemove={jest.fn()} />);
     const header = screen.getByTestId("header-last_name");
     let rows = screen.getAllByRole("row");
     // The first data row should have the alphabetically first last name (default)
@@ -41,7 +41,7 @@ describe("ProviderTable", () => {
   });
 
   it("can select and deselect individual rows", () => {
-    render(<ProviderTable providers={sampleProviders} onRemove={jest.fn()} />);
+    render(<ProviderList providers={sampleProviders} onRemove={jest.fn()} />);
     const firstCheckbox = screen.getByTestId(
       "select-row-0"
     ) as HTMLInputElement;
@@ -53,7 +53,7 @@ describe("ProviderTable", () => {
   });
 
   it("can select and deselect all rows", () => {
-    render(<ProviderTable providers={sampleProviders} onRemove={jest.fn()} />);
+    render(<ProviderList providers={sampleProviders} onRemove={jest.fn()} />);
     const selectAll = screen.getByTestId("select-all") as HTMLInputElement;
     fireEvent.click(selectAll);
     const checkboxes = sampleProviders.map(
@@ -66,7 +66,7 @@ describe("ProviderTable", () => {
 
   it("calls onRemove with selected indexes when Remove Selected is clicked", () => {
     const onRemove = jest.fn();
-    render(<ProviderTable providers={sampleProviders} onRemove={onRemove} />);
+    render(<ProviderList providers={sampleProviders} onRemove={onRemove} />);
     const firstCheckbox = screen.getByTestId("select-row-0");
     fireEvent.click(firstCheckbox);
     const removeBtn = screen.getByTestId("remove-btn");
@@ -75,13 +75,13 @@ describe("ProviderTable", () => {
   });
 
   it("disables Remove Selected button when no rows are selected", () => {
-    render(<ProviderTable providers={sampleProviders} onRemove={jest.fn()} />);
+    render(<ProviderList providers={sampleProviders} onRemove={jest.fn()} />);
     const removeBtn = screen.getByTestId("remove-btn");
     expect(removeBtn).toBeDisabled();
   });
 
   it("enables Remove Selected button when at least one row is selected", () => {
-    render(<ProviderTable providers={sampleProviders} onRemove={jest.fn()} />);
+    render(<ProviderList providers={sampleProviders} onRemove={jest.fn()} />);
     const firstCheckbox = screen.getByTestId("select-row-0");
     fireEvent.click(firstCheckbox);
     const removeBtn = screen.getByTestId("remove-btn");
@@ -89,7 +89,7 @@ describe("ProviderTable", () => {
   });
 
   it("shows and updates sort key and direction dropdowns", () => {
-    render(<ProviderTable providers={sampleProviders} onRemove={jest.fn()} />);
+    render(<ProviderList providers={sampleProviders} onRemove={jest.fn()} />);
     const sortKeySelect = screen.getByTestId(
       "sort-key-select"
     ) as HTMLSelectElement;
@@ -117,7 +117,7 @@ describe("ProviderTable", () => {
   });
 
   it("sorts table rows according to selected sort key and direction", () => {
-    render(<ProviderTable providers={sampleProviders} onRemove={jest.fn()} />);
+    render(<ProviderList providers={sampleProviders} onRemove={jest.fn()} />);
     const sortKeySelect = screen.getByTestId(
       "sort-key-select"
     ) as HTMLSelectElement;

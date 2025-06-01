@@ -6,15 +6,15 @@ import { PROVIDER_FIELD_TITLES } from "../constants";
 type SortKey = keyof ProviderData;
 type SortDirection = "asc" | "desc";
 
-interface ProviderTableProps {
+interface ProviderListProps {
   providers: ProviderData[];
   onRemove: (indexes: number[]) => void;
 }
 
-export default function ProviderTable({
+export default function ProviderList({
   providers,
   onRemove,
-}: ProviderTableProps) {
+}: ProviderListProps) {
   const [filter, setFilter] = useState("");
   const [sortKey, setSortKey] = useState<SortKey>("last_name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
