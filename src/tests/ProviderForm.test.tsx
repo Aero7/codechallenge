@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom';
 import { render, fireEvent, screen } from '@testing-library/react';
-import ProviderForm, { PROVIDER_INPUT_ERROR_MESSAGES, PROVIDER_INPUT_PLACEHOLDERS, REQUIRED_FIELDS } from '../components/ProviderForm';
+import ProviderForm, { REQUIRED_FIELDS } from '../components/ProviderForm';
+import { PROVIDER_FIELD_TITLES, PROVIDER_INPUT_ERROR_MESSAGES } from '../constants';
 
 const fillForm = (fields: Record<string, string>) => {
   Object.entries(fields).forEach(([key, value]) => {
@@ -36,7 +37,7 @@ describe('ProviderForm', () => {
     render(<ProviderForm onSubmit={jest.fn()} />);
     // Touch and blur required fields without entering values
     REQUIRED_FIELDS.forEach((field) => {
-      const input = screen.getByPlaceholderText(PROVIDER_INPUT_PLACEHOLDERS[field]);
+      const input = screen.getByPlaceholderText(PROVIDER_FIELD_TITLES[field]);
       fireEvent.blur(input);
       expect(screen.getByTestId('error-message-' + field)).toBeInTheDocument();
     });

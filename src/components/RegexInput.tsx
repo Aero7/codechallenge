@@ -29,12 +29,13 @@ const RegexInput: React.FC<RegexInputProps> = ({
   };
 
   return (
-    <div className="input-group mb-3">
+    <>
       <input
         type="text"
         className="form-control"
         value={value}
         placeholder={placeholder}
+        aria-label={placeholder}
         onChange={handleChange}
         onBlur={() => setTouched(true)}
         data-testid="regex-input"
@@ -45,7 +46,7 @@ const RegexInput: React.FC<RegexInputProps> = ({
           {errorMessage}
         </span>
       )}
-    </div>
+    </>
   );
 };
 

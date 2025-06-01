@@ -1,41 +1,26 @@
 import React, { useState } from 'react';
 import RegexInput from './RegexInput';
 import type { ProviderData } from '../App';
+import { PROVIDER_INPUT_ERROR_MESSAGES, PROVIDER_FIELD_TITLES } from '../constants';
 
 interface ProviderFormProps {
     onSubmit: (provider: ProviderData) => void;
 }
 
 const initialState: ProviderData = {
-    last_name: '',
     first_name: '',
+    last_name: '',
     email_address: '',
     specialty: '',
     practice_name: '',
 };
 
 const regexes = {
-    last_name: /^[a-zA-Z\s'-]{2,}$/,
     first_name: /^[a-zA-Z\s'-]{2,}$/,
+    last_name: /^[a-zA-Z\s'-]{2,}$/,
     email_address: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
     specialty: /^[a-zA-Z\s'-]{2,}$/,
     practice_name: /^.{2,}$/,
-};
-
-export const PROVIDER_INPUT_ERROR_MESSAGES = {
-    last_name: 'Enter a valid last name (required, min 2 letters)',
-    first_name: 'Enter a valid first name (required, min 2 letters)',
-    email_address: 'Enter a valid email address (required)',
-    specialty: 'Enter a valid specialty (letters, spaces, apostrophes, hyphens, min 2 chars)',
-    practice_name: 'Enter a valid practice name (min 2 chars)',
-};
-
-export const PROVIDER_INPUT_PLACEHOLDERS = {
-    last_name: 'Last Name',
-    first_name: 'First Name',
-    email_address: 'Email Address',
-    specialty: 'Specialty',
-    practice_name: 'Practice Name',
 };
 
 export const REQUIRED_FIELDS: (keyof ProviderData)[] = ['first_name', 'last_name', 'email_address'];
@@ -100,14 +85,14 @@ export default function ProviderForm({ onSubmit }: ProviderFormProps) {
                 <div className="card-body">
                     <form onSubmit={handleSubmit}>
                         {inputFields.map((key) => (
-                            <div key={key}>
+                            <div key={key} className="input-group mb-3">
                                 <RegexInput
                                     field={key}
                                     value={fields[key]}
                                     onChange={handleChange(key)}
                                     regex={regexes[key]}
                                     errorMessage={errorShown(key) ? PROVIDER_INPUT_ERROR_MESSAGES[key] : ''}
-                                    placeholder={PROVIDER_INPUT_PLACEHOLDERS[key]}
+                                    placeholder={PROVIDER_FIELD_TITLES[key]}
                                 />
                             </div>
                         ))}

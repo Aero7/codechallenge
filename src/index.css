@@ -2,6 +2,7 @@ body {
   margin: 0;
   display: flex;
   min-width: 320px;
+  max-height: 100vh;
   min-height: 100vh;
 }
 
@@ -13,31 +14,75 @@ body {
 
 #app {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  padding-top: 1rem;
   gap: 1rem;
+  flex: 1;
 }
 
 #provider-form {
-  flex: 0 0 350px;
-  max-width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex: 1;
 }
 
-#provider-table {
+#provider-list {
+  display: flex;
+  flex-direction: row;
+  flex: 2;
+}
+
+#provider-list #table-controls {
+  display: flex;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+#provider-list #filter-input {
   flex: 1;
+}
+
+#provider-list #sort-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+#provider-form > .card,
+#provider-list > .card {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin-bottom: 1rem;
 }
 
 .invalid-feedback {
   display: block;
 }
 
-/* Responsive: stack vertically below 768px */
-@media (max-width: 768px) {
+@media (min-width: 992px) {
   #app {
-    flex-direction: column;
+    overflow: hidden;
+    flex-direction: row;
   }
+
   #provider-form,
+  #provider-list {
+    overflow: hidden;
+  }
+
+  #provider-form .card-body {
+    overflow: auto;
+  }
+
   #provider-table {
-    flex: unset;
-    max-width: 100%;
+    display: flex;
+    flex: 1;
+    overflow: auto;
+  }
+
+  #provider-list .card-body {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
 }
