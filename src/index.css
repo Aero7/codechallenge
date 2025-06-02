@@ -47,6 +47,18 @@ body {
   gap: 0.5rem;
 }
 
+.provider-details {
+  display: flex;
+}
+
+.provider-contact {
+  flex: 1;
+}
+
+.provider-specs {
+  text-align: right;
+}
+
 #provider-form > .card,
 #provider-list > .card {
   display: flex;
@@ -56,7 +68,7 @@ body {
 }
 
 .invalid-feedback {
-  display: block;
+  display: block !important;
 }
 
 @media (min-width: 992px) {
@@ -74,7 +86,7 @@ body {
     overflow: auto;
   }
 
-  #provider-table {
+  #provider-content {
     display: flex;
     flex: 1;
     overflow: auto;

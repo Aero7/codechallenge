@@ -24,7 +24,7 @@ Object.defineProperty(window, "localStorage", {
 });
 
 jest.mock("../components/ProviderList", () => (props: any) => (
-  <div data-testid="provider-table">{JSON.stringify(props.providers)}</div>
+  <div data-testid="provider-list">{JSON.stringify(props.providers)}</div>
 ));
 
 jest.mock("../assets/sample-data.json", () => [
@@ -49,7 +49,7 @@ describe("App", () => {
 
   it("loads providers from sample data if localStorage is empty", () => {
     render(<App />);
-    expect(screen.getByTestId("provider-table")).toHaveTextContent("Test");
+    expect(screen.getByTestId("provider-list")).toHaveTextContent("Test");
   });
 
   it("loads providers from localStorage if present", () => {
@@ -66,7 +66,7 @@ describe("App", () => {
       ])
     );
     render(<App />);
-    expect(screen.getByTestId("provider-table")).toHaveTextContent("Stored");
+    expect(screen.getByTestId("provider-list")).toHaveTextContent("Stored");
   });
 
   it("saves providers to localStorage when providers state changes", () => {
