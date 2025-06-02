@@ -9,6 +9,7 @@ email, practice name, and specialty.
 - Node
 - Vite
 - React
+- Jest
 - Bootstrap
 - Typescript
 
@@ -21,7 +22,6 @@ npm install
 
 npm run dev
 
-
 ```
 
 After running the commands, open your broswer to http://localhost:5173/
@@ -29,3 +29,14 @@ After running the commands, open your broswer to http://localhost:5173/
 ### Data Persistence
 
 Browser localStorage is used to store changes made to the Providers list. A set of sample Providers will be initially loaded by default
+
+### Testing
+
+Jest can be used to run tests
+
+```
+npm run test
+
+npm run coverage
+
+```
