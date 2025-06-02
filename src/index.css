@@ -10,13 +10,16 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  overflow-x: hidden;
 }
 
 #app {
   display: flex;
   flex-direction: column;
   padding-top: 1rem;
-  gap: 1rem;
+
   flex: 1;
 }
 
@@ -32,19 +35,23 @@ body {
   flex: 2;
 }
 
-#provider-list #table-controls {
+#table-controls {
   display: flex;
   margin-bottom: 1rem;
   gap: 1rem;
 }
 
-#provider-list #filter-input {
+#filter-input {
   flex: 1;
 }
 
-#provider-list #sort-controls {
+#sort-controls {
   display: flex;
   gap: 0.5rem;
+}
+
+#provider-content {
+  overflow-x: auto;
 }
 
 .provider-details {
@@ -75,6 +82,7 @@ body {
   #app {
     overflow: hidden;
     flex-direction: row;
+    gap: 1rem;
   }
 
   #provider-form,
@@ -88,7 +96,6 @@ body {
 
   #provider-content {
     display: flex;
-    flex: 1;
     overflow: auto;
   }
 
@@ -96,5 +103,15 @@ body {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+  }
+}
+
+@media (max-width: 640px) {
+  #table-controls {
+    display: inherit;
+  }
+
+  #table-controls > *:not(:first-child) {
+    margin-top: 1rem;
   }
 }

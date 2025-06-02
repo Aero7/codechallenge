@@ -4,8 +4,15 @@ Create a basic, web-based contact directory that presents users with a list of a
 convenience, users should be able to sort, filter, and search the contacts in the directory. Contacts should contain first name, last name,
 email, practice name, and specialty.
 
+## Frameworks & Languages Utilized
 
-## Building and RUnning the Application Locally
+- Node
+- Vite
+- React
+- Bootstrap
+- Typescript
+
+## Building and Running the Application Locally
 
 Execute the following set of commands to run the app locally:
 
@@ -14,4 +21,11 @@ npm install
 
 npm run dev
 
+
 ```
+
+After running the commands, open your broswer to http://localhost:5173/
+
+### Data Persistence
+
+Browser localStorage is used to store changes made to the Providers list. A set of sample Providers will be initially loaded by default
