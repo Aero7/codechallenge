@@ -3,16 +3,29 @@ import { render, fireEvent, screen } from "@testing-library/react";
 import ProviderList from "../components/ProviderList";
 import sampleProviders from "../assets/sample-data.json";
 import { UNIQUE_SAMPLE_PROVIDERS } from "../constants";
+import userEvent from "@testing-library/user-event";
 
 describe("ProviderList", () => {
   it("renders the list and input", () => {
-    render(<ProviderList providers={sampleProviders} onRemove={jest.fn()} />);
+    render(
+      <ProviderList
+        providers={sampleProviders}
+        onRemove={jest.fn()}
+        onUpdateProviders={jest.fn()}
+      />
+    );
     expect(screen.getByText("Provider List")).toBeInTheDocument();
     expect(screen.getByTestId("regex-input")).toBeInTheDocument();
   });
 
   it("filters table rows based on input", () => {
-    render(<ProviderList providers={sampleProviders} onRemove={jest.fn()} />);
+    render(
+      <ProviderList
+        providers={sampleProviders}
+        onRemove={jest.fn()}
+        onUpdateProviders={jest.fn()}
+      />
+    );
     // Switch to table view
     fireEvent.click(screen.getByTestId("toggle-view-btn"));
     // Initially, all providers should be visible
@@ -26,7 +39,13 @@ describe("ProviderList", () => {
   });
 
   it("sorts by last name ascending and descending", () => {
-    render(<ProviderList providers={sampleProviders} onRemove={jest.fn()} />);
+    render(
+      <ProviderList
+        providers={sampleProviders}
+        onRemove={jest.fn()}
+        onUpdateProviders={jest.fn()}
+      />
+    );
     // Switch to table view
     fireEvent.click(screen.getByTestId("toggle-view-btn"));
     const header = screen.getByTestId("header-last_name");
@@ -51,7 +70,13 @@ describe("ProviderList", () => {
   });
 
   it("can select and deselect individual rows", () => {
-    render(<ProviderList providers={sampleProviders} onRemove={jest.fn()} />);
+    render(
+      <ProviderList
+        providers={sampleProviders}
+        onRemove={jest.fn()}
+        onUpdateProviders={jest.fn()}
+      />
+    );
     const firstCheckbox = screen.getByTestId(
       "select-row-0"
     ) as HTMLInputElement;
@@ -63,7 +88,13 @@ describe("ProviderList", () => {
   });
 
   it("can select and deselect all rows", () => {
-    render(<ProviderList providers={sampleProviders} onRemove={jest.fn()} />);
+    render(
+      <ProviderList
+        providers={sampleProviders}
+        onRemove={jest.fn()}
+        onUpdateProviders={jest.fn()}
+      />
+    );
     const selectAll = screen.getByTestId("select-all") as HTMLInputElement;
     fireEvent.click(selectAll);
     const checkboxes = sampleProviders.map(
@@ -76,7 +107,13 @@ describe("ProviderList", () => {
 
   it("calls onRemove with selected indexes when Remove Selected is clicked", () => {
     const onRemove = jest.fn();
-    render(<ProviderList providers={sampleProviders} onRemove={onRemove} />);
+    render(
+      <ProviderList
+        providers={sampleProviders}
+        onRemove={onRemove}
+        onUpdateProviders={jest.fn()}
+      />
+    );
     const firstCheckbox = screen.getByTestId("select-row-0");
     fireEvent.click(firstCheckbox);
     const removeBtn = screen.getByTestId("remove-btn");
@@ -85,13 +122,25 @@ describe("ProviderList", () => {
   });
 
   it("disables Remove Selected button when no rows are selected", () => {
-    render(<ProviderList providers={sampleProviders} onRemove={jest.fn()} />);
+    render(
+      <ProviderList
+        providers={sampleProviders}
+        onRemove={jest.fn()}
+        onUpdateProviders={jest.fn()}
+      />
+    );
     const removeBtn = screen.getByTestId("remove-btn");
     expect(removeBtn).toBeDisabled();
   });
 
   it("enables Remove Selected button when at least one row is selected", () => {
-    render(<ProviderList providers={sampleProviders} onRemove={jest.fn()} />);
+    render(
+      <ProviderList
+        providers={sampleProviders}
+        onRemove={jest.fn()}
+        onUpdateProviders={jest.fn()}
+      />
+    );
     const firstCheckbox = screen.getByTestId("select-row-0");
     fireEvent.click(firstCheckbox);
     const removeBtn = screen.getByTestId("remove-btn");
@@ -99,7 +148,13 @@ describe("ProviderList", () => {
   });
 
   it("shows and updates sort key select and toggles sort direction with button", () => {
-    render(<ProviderList providers={sampleProviders} onRemove={jest.fn()} />);
+    render(
+      <ProviderList
+        providers={sampleProviders}
+        onRemove={jest.fn()}
+        onUpdateProviders={jest.fn()}
+      />
+    );
     const sortKeySelect = screen.getByTestId(
       "sort-key-select"
     ) as HTMLSelectElement;
@@ -125,7 +180,13 @@ describe("ProviderList", () => {
   });
 
   it("sorts table rows according to selected sort key and direction", () => {
-    render(<ProviderList providers={sampleProviders} onRemove={jest.fn()} />);
+    render(
+      <ProviderList
+        providers={sampleProviders}
+        onRemove={jest.fn()}
+        onUpdateProviders={jest.fn()}
+      />
+    );
     // Switch to table view
     fireEvent.click(screen.getByTestId("toggle-view-btn"));
     const sortKeySelect = screen.getByTestId(
@@ -155,7 +216,13 @@ describe("ProviderList", () => {
   });
 
   it("renders list view by default and toggles to table view", () => {
-    render(<ProviderList providers={sampleProviders} onRemove={jest.fn()} />);
+    render(
+      <ProviderList
+        providers={sampleProviders}
+        onRemove={jest.fn()}
+        onUpdateProviders={jest.fn()}
+      />
+    );
     // Table view should be default
     expect(screen.getByTestId("toggle-view-btn")).toHaveTextContent(
       "Table View"
@@ -175,7 +242,13 @@ describe("ProviderList", () => {
   });
 
   it("shows empty state when no providers match the filter", () => {
-    render(<ProviderList providers={sampleProviders} onRemove={jest.fn()} />);
+    render(
+      <ProviderList
+        providers={sampleProviders}
+        onRemove={jest.fn()}
+        onUpdateProviders={jest.fn()}
+      />
+    );
     const input = screen.getByTestId("regex-input");
     fireEvent.change(input, { target: { value: "zzzzzzzz" } });
     expect(screen.getByText(/no providers match/i)).toBeInTheDocument();
@@ -183,7 +256,11 @@ describe("ProviderList", () => {
 
   it("renders each provider in table view", () => {
     render(
-      <ProviderList providers={UNIQUE_SAMPLE_PROVIDERS} onRemove={jest.fn()} />
+      <ProviderList
+        providers={UNIQUE_SAMPLE_PROVIDERS}
+        onRemove={jest.fn()}
+        onUpdateProviders={jest.fn()}
+      />
     );
     // Switch to table view
     fireEvent.click(screen.getByTestId("toggle-view-btn"));
@@ -201,16 +278,113 @@ describe("ProviderList", () => {
 
   it("renders each provider in list view", () => {
     render(
-      <ProviderList providers={UNIQUE_SAMPLE_PROVIDERS} onRemove={jest.fn()} />
+      <ProviderList
+        providers={UNIQUE_SAMPLE_PROVIDERS}
+        onRemove={jest.fn()}
+        onUpdateProviders={jest.fn()}
+      />
     );
     // List view is default
     UNIQUE_SAMPLE_PROVIDERS.forEach((provider) => {
-      expect(
-        screen.getByText(provider.last_name + ", " + provider.first_name)
-      ).toBeInTheDocument();
+      expect(screen.getByText(provider.first_name)).toBeInTheDocument();
+      expect(screen.getByText(provider.last_name)).toBeInTheDocument();
       expect(screen.getByText(provider.email_address)).toBeInTheDocument();
       expect(screen.getByText(provider.specialty)).toBeInTheDocument();
       expect(screen.getByText(provider.practice_name)).toBeInTheDocument();
     });
+  });
+
+  it("allows editing a cell in table view and updates the provider", async () => {
+    const user = userEvent.setup();
+    const onUpdateProviders = jest.fn();
+    render(
+      <ProviderList
+        providers={sampleProviders}
+        onRemove={jest.fn()}
+        onUpdateProviders={onUpdateProviders}
+      />
+    );
+    // Switch to table view
+    fireEvent.click(screen.getByTestId("toggle-view-btn"));
+
+    // Double click the first provider's first_name cell
+    const cell = screen.getByTestId("cell-0-first_name");
+    await user.dblClick(cell);
+
+    // Should show input with current value
+    const input = screen.getByTestId("cell-input-0-first_name");
+    expect(input).toBeInTheDocument();
+
+    // Change value and blur (simulate edit)
+    await user.clear(input);
+    await user.type(input, "EditedName");
+    fireEvent.blur(input);
+
+    // onUpdateProviders should be called with updated value
+    expect(onUpdateProviders).toHaveBeenCalled();
+    const updatedProviders = onUpdateProviders.mock.calls[0][0];
+    expect(updatedProviders[0].first_name).toBe("EditedName");
+  });
+
+  it("allows editing a field in list view and updates the provider", async () => {
+    const user = userEvent.setup();
+    const onUpdateProviders = jest.fn();
+    render(
+      <ProviderList
+        providers={sampleProviders}
+        onRemove={jest.fn()}
+        onUpdateProviders={onUpdateProviders}
+      />
+    );
+    // List view is default
+
+    // Double click the first provider's last_name in list view
+    const cell = screen.getByTestId("cell-0-last_name");
+    await user.dblClick(cell);
+
+    // Should show input with current value
+    const input = screen.getByTestId("cell-input-0-last_name");
+    expect(input).toBeInTheDocument();
+
+    // Change value and blur (simulate edit)
+    await user.clear(input);
+    await user.type(input, "EditedLast");
+    fireEvent.blur(input);
+
+    // onUpdateProviders should be called with updated value
+    expect(onUpdateProviders).toHaveBeenCalled();
+    const updatedProviders = onUpdateProviders.mock.calls[0][0];
+    expect(updatedProviders[0].last_name).toBe("EditedLast");
+  });
+
+  it("cancels editing on Escape key", async () => {
+    const user = userEvent.setup();
+    const onUpdateProviders = jest.fn();
+    render(
+      <ProviderList
+        providers={sampleProviders}
+        onRemove={jest.fn()}
+        onUpdateProviders={onUpdateProviders}
+      />
+    );
+    // Switch to table view
+    fireEvent.click(screen.getByTestId("toggle-view-btn"));
+
+    // Double click the first provider's specialty cell
+    const cell = screen.getByTestId("cell-0-specialty");
+    await user.dblClick(cell);
+
+    // Should show input
+    const input = screen.getByTestId("cell-input-0-specialty");
+    expect(input).toBeInTheDocument();
+
+    // Press Escape
+    fireEvent.keyDown(input, { key: "Escape", code: "Escape" });
+
+    // Input should disappear, onUpdateProviders should not be called
+    expect(
+      screen.queryByTestId("cell-input-0-specialty")
+    ).not.toBeInTheDocument();
+    expect(onUpdateProviders).not.toHaveBeenCalled();
   });
 });

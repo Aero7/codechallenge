@@ -43,6 +43,7 @@ export default function App() {
           onRemove={(indices) =>
             setProviders((prev) => prev.filter((_, i) => !indices.includes(i)))
           }
+          onUpdateProviders={(updatedProviders: ProviderData[]) => setProviders(updatedProviders)}
         />
       </div>
     </>

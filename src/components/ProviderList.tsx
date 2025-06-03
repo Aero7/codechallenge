@@ -9,17 +9,25 @@ type SortDirection = "asc" | "desc";
 interface ProviderListProps {
   providers: ProviderData[];
   onRemove: (indexes: number[]) => void;
+  onUpdateProviders: (providers: ProviderData[]) => void;
 }
 
 export default function ProviderList({
   providers,
   onRemove,
+  onUpdateProviders,
 }: ProviderListProps) {
   const [viewMode, setViewMode] = useState<"table" | "list">("list");
   const [filter, setFilter] = useState("");
   const [sortKey, setSortKey] = useState<SortKey>("last_name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [selected, setSelected] = useState<Set<number>>(new Set());
+  // --- New state for editing cells ---
+  const [editingCell, setEditingCell] = useState<{
+    row: number;
+    col: keyof ProviderData;
+  } | null>(null);
+  const [cellInput, setCellInput] = useState<string>("");
 
   const filteredData = providers
     .map((provider, idx) => ({ provider, idx }))
@@ -79,6 +87,44 @@ export default function ProviderList({
     setSelected(new Set());
   };
 
+  // --- Editable Cell Logic ---
+  const columns: (keyof ProviderData)[] = [
+    "last_name",
+    "first_name",
+    "email_address",
+    "specialty",
+    "practice_name",
+  ];
+
+  function handleCellDoubleClick(
+    rowIdx: number,
+    col: keyof ProviderData,
+    value: string
+  ) {
+    setEditingCell({ row: rowIdx, col });
+    setCellInput(value);
+  }
+
+  function handleCellInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setCellInput(e.target.value);
+  }
+
+  function handleCellInputBlur(rowIdx: number, col: keyof ProviderData) {
+    if (cellInput.trim() !== providers[rowIdx][col]) {
+      const updatedProviders = providers.map((p, idx) =>
+        idx === rowIdx ? { ...p, [col]: cellInput } : p
+      );
+      onUpdateProviders(updatedProviders);
+    }
+    setEditingCell(null);
+  }
+
+  function handleCellInputKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Enter" || e.key === "Escape") {
+      (e.target as HTMLInputElement).blur();
+    }
+  }
+
   function renderProviders() {
     if (sortedData.length === 0) {
       return (
@@ -94,15 +140,6 @@ export default function ProviderList({
   }
 
   function renderTable() {
-    // Define the order and keys for columns
-    const columns: (keyof ProviderData)[] = [
-      "last_name",
-      "first_name",
-      "email_address",
-      "specialty",
-      "practice_name",
-    ];
-
     return (
       <table
         data-testid="provider-table"
@@ -147,7 +184,31 @@ export default function ProviderList({
                 />
               </td>
               {columns.map((col) => (
-                <td key={col}>{provider[col]}</td>
+                <td
+                  key={col}
+                  onDoubleClick={() =>
+                    handleCellDoubleClick(idx, col, provider[col])
+                  }
+                  style={{ cursor: "pointer" }}
+                  data-testid={`cell-${idx}-${col}`}
+                >
+                  {editingCell &&
+                  editingCell.row === idx &&
+                  editingCell.col === col ? (
+                    <input
+                      type="text"
+                      value={cellInput}
+                      autoFocus
+                      onChange={handleCellInputChange}
+                      onBlur={() => handleCellInputBlur(idx, col)}
+                      onKeyDown={(e) => handleCellInputKeyDown(e)}
+                      style={{ width: "95%" }}
+                      data-testid={`cell-input-${idx}-${col}`}
+                    />
+                  ) : (
+                    provider[col]
+                  )}
+                </td>
               ))}
             </tr>
           ))}
@@ -179,36 +240,174 @@ export default function ProviderList({
           </tr>
         </thead>
         <tbody>
-          {sortedData.map(({ provider, idx }) => (
-            <tr key={idx}>
-              <td>
-                <input
-                  type="checkbox"
-                  data-testid={`select-row-${idx}`}
-                  checked={selected.has(idx)}
-                  onChange={() => handleSelect(idx)}
-                  aria-label={`Select row ${idx}`}
-                />
-              </td>
-              <td>
-                <div className="provider-details">
-                  <div className="provider-contact">
-                    <h5>{provider.last_name + ", " + provider.first_name}</h5>
-                    <a href={`mailto:${provider.email_address}`}>
-                      {provider.email_address}
-                    </a>
-                  </div>
-
-                  <div className="provider-specs">
-                    <div className="fs-5">{provider.specialty}</div>
-                    <div>{provider.practice_name}</div>
-                  </div>
-                </div>
-              </td>
-            </tr>
-          ))}
+          {sortedData.map(({ provider, idx }) => renderProvider(provider, idx))}
         </tbody>
       </table>
+    );
+  }
+
+  function renderProvider(provider: ProviderData, idx: number) {
+    return (
+      <tr key={idx}>
+        <td>
+          <input
+            type="checkbox"
+            data-testid={`select-row-${idx}`}
+            checked={selected.has(idx)}
+            onChange={() => handleSelect(idx)}
+            aria-label={`Select row ${idx}`}
+          />
+        </td>
+        <td>
+          <div className="provider-details">
+            <div className="provider-contact">
+              {/* Last Name, First Name */}
+              <h5
+                style={{
+                  cursor: "pointer",
+                  display: "inline-block",
+                }}
+                onDoubleClick={() =>
+                  handleCellDoubleClick(idx, "last_name", provider.last_name)
+                }
+                data-testid={`cell-${idx}-last_name`}
+              >
+                {editingCell &&
+                editingCell.row === idx &&
+                editingCell.col === "last_name" ? (
+                  <input
+                    type="text"
+                    value={cellInput}
+                    autoFocus
+                    onChange={handleCellInputChange}
+                    onBlur={() => handleCellInputBlur(idx, "last_name")}
+                    onKeyDown={(e) => handleCellInputKeyDown(e)}
+                    style={{ width: "45%" }}
+                    data-testid={`cell-input-${idx}-last_name`}
+                  />
+                ) : (
+                  provider.last_name
+                )}
+              </h5>
+              <span>, </span>
+              <h5
+                style={{ cursor: "pointer", display: "inline-block" }}
+                onDoubleClick={() =>
+                  handleCellDoubleClick(idx, "first_name", provider.first_name)
+                }
+                data-testid={`cell-${idx}-first_name`}
+              >
+                {editingCell &&
+                editingCell.row === idx &&
+                editingCell.col === "first_name" ? (
+                  <input
+                    type="text"
+                    value={cellInput}
+                    autoFocus
+                    onChange={handleCellInputChange}
+                    onBlur={() => handleCellInputBlur(idx, "first_name")}
+                    onKeyDown={(e) => handleCellInputKeyDown(e)}
+                    style={{ width: "45%" }}
+                    data-testid={`cell-input-${idx}-first_name`}
+                  />
+                ) : (
+                  provider.first_name
+                )}
+              </h5>
+              <br />
+              {/* Email */}
+              <a
+                href={`mailto:${provider.email_address}`}
+                style={{ cursor: "pointer" }}
+                onDoubleClick={(e) => {
+                  e.preventDefault();
+                  handleCellDoubleClick(
+                    idx,
+                    "email_address",
+                    provider.email_address
+                  );
+                }}
+                data-testid={`cell-${idx}-email_address`}
+              >
+                {editingCell &&
+                editingCell.row === idx &&
+                editingCell.col === "email_address" ? (
+                  <input
+                    type="text"
+                    value={cellInput}
+                    autoFocus
+                    onChange={handleCellInputChange}
+                    onBlur={() => handleCellInputBlur(idx, "email_address")}
+                    onKeyDown={(e) => handleCellInputKeyDown(e)}
+                    style={{ width: "90%" }}
+                    data-testid={`cell-input-${idx}-email_address`}
+                  />
+                ) : (
+                  provider.email_address
+                )}
+              </a>
+            </div>
+
+            <div className="provider-specs">
+              {/* Specialty */}
+              <div
+                className="fs-5"
+                style={{ cursor: "pointer" }}
+                onDoubleClick={() =>
+                  handleCellDoubleClick(idx, "specialty", provider.specialty)
+                }
+                data-testid={`cell-${idx}-specialty`}
+              >
+                {editingCell &&
+                editingCell.row === idx &&
+                editingCell.col === "specialty" ? (
+                  <input
+                    type="text"
+                    value={cellInput}
+                    autoFocus
+                    onChange={handleCellInputChange}
+                    onBlur={() => handleCellInputBlur(idx, "specialty")}
+                    onKeyDown={(e) => handleCellInputKeyDown(e)}
+                    style={{ width: "90%" }}
+                    data-testid={`cell-input-${idx}-specialty`}
+                  />
+                ) : (
+                  provider.specialty
+                )}
+              </div>
+              {/* Practice Name */}
+              <div
+                style={{ cursor: "pointer" }}
+                onDoubleClick={() =>
+                  handleCellDoubleClick(
+                    idx,
+                    "practice_name",
+                    provider.practice_name
+                  )
+                }
+                data-testid={`cell-${idx}-practice_name`}
+              >
+                {editingCell &&
+                editingCell.row === idx &&
+                editingCell.col === "practice_name" ? (
+                  <input
+                    type="text"
+                    value={cellInput}
+                    autoFocus
+                    onChange={handleCellInputChange}
+                    onBlur={() => handleCellInputBlur(idx, "practice_name")}
+                    onKeyDown={(e) => handleCellInputKeyDown(e)}
+                    style={{ width: "90%" }}
+                    data-testid={`cell-input-${idx}-practice_name`}
+                  />
+                ) : (
+                  provider.practice_name
+                )}
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
     );
   }
 
