@@ -26,6 +26,10 @@ npm run dev
 
 After running the commands, open your broswer to http://localhost:5173/
 
+### Inline Edit
+
+All fields in both the Provider list and table views are editable with a double click and can be saved by pressing enter/esc or clicking out of the text box
+
 ### Data Persistence
 
 Browser localStorage is used to store changes made to the Providers list. A set of sample Providers will be initially loaded by default
