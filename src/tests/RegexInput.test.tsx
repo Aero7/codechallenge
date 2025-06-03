@@ -52,9 +52,7 @@ describe("RegexInput", () => {
 
   it("calls onBlur when input is blurred", () => {
     const handleBlur = jest.fn();
-    render(
-      <RegexInput value="abc" onChange={() => {}} onBlur={handleBlur} />
-    );
+    render(<RegexInput value="abc" onChange={() => {}} onBlur={handleBlur} />);
     const input = screen.getByTestId("regex-input");
     fireEvent.blur(input);
     expect(handleBlur).toHaveBeenCalled();
@@ -102,5 +100,33 @@ describe("RegexInput", () => {
     const input = screen.getByTestId("regex-input");
     fireEvent.blur(input);
     expect(screen.queryByTestId("popover-error-input")).toBeNull();
+  });
+
+  it("resets touched if value is cleared/reset from parent", () => {
+    const handleChange = jest.fn();
+    const { rerender } = render(
+      <RegexInput
+        value="bad!"
+        onChange={handleChange}
+        regex={/^[a-zA-Z]+$/}
+        errorMessage="Only letters allowed"
+      />
+    );
+    const input = screen.getByTestId("regex-input");
+    // Blur to set touched and show error
+    fireEvent.blur(input);
+    expect(screen.getByTestId("error-message-input")).toBeInTheDocument();
+
+    // Now reset value from parent (simulate parent clearing the input)
+    rerender(
+      <RegexInput
+        value=""
+        onChange={handleChange}
+        regex={/^[a-zA-Z]+$/}
+        errorMessage="Only letters allowed"
+      />
+    );
+    // Error message should disappear because touched is reset
+    expect(screen.queryByTestId("error-message-input")).toBeNull();
   });
 });

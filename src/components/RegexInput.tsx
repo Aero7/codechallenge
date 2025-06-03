@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 interface RegexInputProps {
   field?: string;
@@ -29,6 +29,13 @@ const RegexInput: React.FC<RegexInputProps> = ({
 }) => {
   const [touched, setTouched] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Reset touched if value is cleared/reset from parent
+  useEffect(() => {
+    if (value === "") {
+      setTouched(false);
+    }
+  }, [value]);
 
   const isValid = regex ? regex.test(value) : true;
 
