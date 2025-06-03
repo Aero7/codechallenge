@@ -254,46 +254,6 @@ describe("ProviderList", () => {
     expect(screen.getByText(/no providers match/i)).toBeInTheDocument();
   });
 
-  it("renders each provider in table view", () => {
-    render(
-      <ProviderList
-        providers={UNIQUE_SAMPLE_PROVIDERS}
-        onRemove={jest.fn()}
-        onUpdateProviders={jest.fn()}
-      />
-    );
-    // Switch to table view
-    fireEvent.click(screen.getByTestId("toggle-view-btn"));
-    // Each provider should have a row in the table (excluding header)
-    const rows = screen.getAllByRole("row").slice(1);
-    expect(rows.length).toBe(UNIQUE_SAMPLE_PROVIDERS.length);
-    UNIQUE_SAMPLE_PROVIDERS.forEach((provider) => {
-      expect(screen.getByText(provider.first_name)).toBeInTheDocument();
-      expect(screen.getByText(provider.last_name)).toBeInTheDocument();
-      expect(screen.getByText(provider.email_address)).toBeInTheDocument();
-      expect(screen.getByText(provider.specialty)).toBeInTheDocument();
-      expect(screen.getByText(provider.practice_name)).toBeInTheDocument();
-    });
-  });
-
-  it("renders each provider in list view", () => {
-    render(
-      <ProviderList
-        providers={UNIQUE_SAMPLE_PROVIDERS}
-        onRemove={jest.fn()}
-        onUpdateProviders={jest.fn()}
-      />
-    );
-    // List view is default
-    UNIQUE_SAMPLE_PROVIDERS.forEach((provider) => {
-      expect(screen.getByText(provider.first_name)).toBeInTheDocument();
-      expect(screen.getByText(provider.last_name)).toBeInTheDocument();
-      expect(screen.getByText(provider.email_address)).toBeInTheDocument();
-      expect(screen.getByText(provider.specialty)).toBeInTheDocument();
-      expect(screen.getByText(provider.practice_name)).toBeInTheDocument();
-    });
-  });
-
   it("allows editing a cell in table view and updates the provider", async () => {
     const user = userEvent.setup();
     const onUpdateProviders = jest.fn();

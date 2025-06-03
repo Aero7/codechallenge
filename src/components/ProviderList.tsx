@@ -2,6 +2,8 @@ import { useState } from "react";
 import RegexInput from "./RegexInput";
 import type { ProviderData } from "../App";
 import { PROVIDER_FIELD_TITLES } from "../constants";
+import ProviderListView from "./ProviderListView";
+import ProviderTable from "./ProviderTable";
 
 type SortKey = keyof ProviderData;
 type SortDirection = "asc" | "desc";
@@ -10,6 +12,25 @@ interface ProviderListProps {
   providers: ProviderData[];
   onRemove: (indexes: number[]) => void;
   onUpdateProviders: (providers: ProviderData[]) => void;
+}
+
+export interface ProviderViewProps {
+  sortedData: { provider: ProviderData; idx: number }[];
+  selected: Set<number>;
+  handleSelect: (idx: number) => void;
+  handleSelectAll: () => void;
+  handleSort: (col: keyof ProviderData) => void;
+  getSortIndicator: (col: keyof ProviderData) => string;
+  editingCell: { row: number; col: keyof ProviderData } | null;
+  cellInput: string;
+  handleCellDoubleClick: (
+    rowIdx: number,
+    col: keyof ProviderData,
+    value: string
+  ) => void;
+  handleCellInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleCellInputBlur: (rowIdx: number, col: keyof ProviderData) => void;
+  handleCellInputKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 export default function ProviderList({
@@ -22,7 +43,6 @@ export default function ProviderList({
   const [sortKey, setSortKey] = useState<SortKey>("last_name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [selected, setSelected] = useState<Set<number>>(new Set());
-  // --- New state for editing cells ---
   const [editingCell, setEditingCell] = useState<{
     row: number;
     col: keyof ProviderData;
@@ -87,15 +107,6 @@ export default function ProviderList({
     setSelected(new Set());
   };
 
-  // --- Editable Cell Logic ---
-  const columns: (keyof ProviderData)[] = [
-    "last_name",
-    "first_name",
-    "email_address",
-    "specialty",
-    "practice_name",
-  ];
-
   function handleCellDoubleClick(
     rowIdx: number,
     col: keyof ProviderData,
@@ -135,280 +146,38 @@ export default function ProviderList({
         </div>
       );
     } else {
-      return viewMode === "table" ? renderTable() : renderList();
+      return viewMode === "table" ? (
+        <ProviderTable
+          sortedData={sortedData}
+          selected={selected}
+          handleSelect={handleSelect}
+          handleSelectAll={handleSelectAll}
+          handleSort={handleSort}
+          getSortIndicator={getSortIndicator}
+          editingCell={editingCell}
+          cellInput={cellInput}
+          handleCellDoubleClick={handleCellDoubleClick}
+          handleCellInputChange={handleCellInputChange}
+          handleCellInputBlur={handleCellInputBlur}
+          handleCellInputKeyDown={handleCellInputKeyDown}
+        />
+      ) : (
+        <ProviderListView
+          sortedData={sortedData}
+          selected={selected}
+          handleSelect={handleSelect}
+          handleSelectAll={handleSelectAll}
+          handleSort={() => ""}
+          getSortIndicator={() => ""}
+          editingCell={editingCell}
+          cellInput={cellInput}
+          handleCellDoubleClick={handleCellDoubleClick}
+          handleCellInputChange={handleCellInputChange}
+          handleCellInputBlur={handleCellInputBlur}
+          handleCellInputKeyDown={handleCellInputKeyDown}
+        />
+      );
     }
-  }
-
-  function renderTable() {
-    return (
-      <table
-        data-testid="provider-table"
-        className="table table-striped table-bordered table-hover mb-0"
-      >
-        <thead>
-          <tr>
-            <th>
-              <input
-                type="checkbox"
-                data-testid="select-all"
-                checked={
-                  selected.size === sortedData.length && sortedData.length > 0
-                }
-                onChange={handleSelectAll}
-                aria-label="Select all"
-              />
-            </th>
-            {columns.map((col) => (
-              <th
-                key={col}
-                onClick={() => handleSort(col)}
-                data-testid={`header-${col}`}
-                style={{ cursor: "pointer" }}
-              >
-                {PROVIDER_FIELD_TITLES[col]}
-                {getSortIndicator(col)}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {sortedData.map(({ provider, idx }) => (
-            <tr key={idx}>
-              <td>
-                <input
-                  type="checkbox"
-                  data-testid={`select-row-${idx}`}
-                  checked={selected.has(idx)}
-                  onChange={() => handleSelect(idx)}
-                  aria-label={`Select row ${idx}`}
-                />
-              </td>
-              {columns.map((col) => (
-                <td
-                  key={col}
-                  onDoubleClick={() =>
-                    handleCellDoubleClick(idx, col, provider[col])
-                  }
-                  style={{ cursor: "pointer" }}
-                  data-testid={`cell-${idx}-${col}`}
-                >
-                  {editingCell &&
-                  editingCell.row === idx &&
-                  editingCell.col === col ? (
-                    <input
-                      type="text"
-                      value={cellInput}
-                      autoFocus
-                      onChange={handleCellInputChange}
-                      onBlur={() => handleCellInputBlur(idx, col)}
-                      onKeyDown={(e) => handleCellInputKeyDown(e)}
-                      style={{ width: "95%" }}
-                      data-testid={`cell-input-${idx}-${col}`}
-                    />
-                  ) : (
-                    provider[col]
-                  )}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    );
-  }
-
-  function renderList() {
-    return (
-      <table
-        data-testid="provider-list"
-        className="table table-striped table-bordered table-hover table-responsive mb-0"
-      >
-        <thead>
-          <tr>
-            <th>
-              <input
-                type="checkbox"
-                data-testid="select-all"
-                checked={
-                  selected.size === sortedData.length && sortedData.length > 0
-                }
-                onChange={handleSelectAll}
-                aria-label="Select all"
-              />
-            </th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedData.map(({ provider, idx }) => renderProvider(provider, idx))}
-        </tbody>
-      </table>
-    );
-  }
-
-  function renderProvider(provider: ProviderData, idx: number) {
-    return (
-      <tr key={idx}>
-        <td>
-          <input
-            type="checkbox"
-            data-testid={`select-row-${idx}`}
-            checked={selected.has(idx)}
-            onChange={() => handleSelect(idx)}
-            aria-label={`Select row ${idx}`}
-          />
-        </td>
-        <td>
-          <div className="provider-details">
-            <div className="provider-contact">
-              {/* Last Name, First Name */}
-              <h5
-                style={{
-                  cursor: "pointer",
-                  display: "inline-block",
-                }}
-                onDoubleClick={() =>
-                  handleCellDoubleClick(idx, "last_name", provider.last_name)
-                }
-                data-testid={`cell-${idx}-last_name`}
-              >
-                {editingCell &&
-                editingCell.row === idx &&
-                editingCell.col === "last_name" ? (
-                  <input
-                    type="text"
-                    value={cellInput}
-                    autoFocus
-                    onChange={handleCellInputChange}
-                    onBlur={() => handleCellInputBlur(idx, "last_name")}
-                    onKeyDown={(e) => handleCellInputKeyDown(e)}
-                    style={{ width: "45%" }}
-                    data-testid={`cell-input-${idx}-last_name`}
-                  />
-                ) : (
-                  provider.last_name
-                )}
-              </h5>
-              <span>, </span>
-              <h5
-                style={{ cursor: "pointer", display: "inline-block" }}
-                onDoubleClick={() =>
-                  handleCellDoubleClick(idx, "first_name", provider.first_name)
-                }
-                data-testid={`cell-${idx}-first_name`}
-              >
-                {editingCell &&
-                editingCell.row === idx &&
-                editingCell.col === "first_name" ? (
-                  <input
-                    type="text"
-                    value={cellInput}
-                    autoFocus
-                    onChange={handleCellInputChange}
-                    onBlur={() => handleCellInputBlur(idx, "first_name")}
-                    onKeyDown={(e) => handleCellInputKeyDown(e)}
-                    style={{ width: "45%" }}
-                    data-testid={`cell-input-${idx}-first_name`}
-                  />
-                ) : (
-                  provider.first_name
-                )}
-              </h5>
-              <br />
-              {/* Email */}
-              <a
-                href={`mailto:${provider.email_address}`}
-                style={{ cursor: "pointer" }}
-                onDoubleClick={(e) => {
-                  e.preventDefault();
-                  handleCellDoubleClick(
-                    idx,
-                    "email_address",
-                    provider.email_address
-                  );
-                }}
-                data-testid={`cell-${idx}-email_address`}
-              >
-                {editingCell &&
-                editingCell.row === idx &&
-                editingCell.col === "email_address" ? (
-                  <input
-                    type="text"
-                    value={cellInput}
-                    autoFocus
-                    onChange={handleCellInputChange}
-                    onBlur={() => handleCellInputBlur(idx, "email_address")}
-                    onKeyDown={(e) => handleCellInputKeyDown(e)}
-                    style={{ width: "90%" }}
-                    data-testid={`cell-input-${idx}-email_address`}
-                  />
-                ) : (
-                  provider.email_address
-                )}
-              </a>
-            </div>
-
-            <div className="provider-specs">
-              {/* Specialty */}
-              <div
-                className="fs-5"
-                style={{ cursor: "pointer" }}
-                onDoubleClick={() =>
-                  handleCellDoubleClick(idx, "specialty", provider.specialty)
-                }
-                data-testid={`cell-${idx}-specialty`}
-              >
-                {editingCell &&
-                editingCell.row === idx &&
-                editingCell.col === "specialty" ? (
-                  <input
-                    type="text"
-                    value={cellInput}
-                    autoFocus
-                    onChange={handleCellInputChange}
-                    onBlur={() => handleCellInputBlur(idx, "specialty")}
-                    onKeyDown={(e) => handleCellInputKeyDown(e)}
-                    style={{ width: "90%" }}
-                    data-testid={`cell-input-${idx}-specialty`}
-                  />
-                ) : (
-                  provider.specialty
-                )}
-              </div>
-              {/* Practice Name */}
-              <div
-                style={{ cursor: "pointer" }}
-                onDoubleClick={() =>
-                  handleCellDoubleClick(
-                    idx,
-                    "practice_name",
-                    provider.practice_name
-                  )
-                }
-                data-testid={`cell-${idx}-practice_name`}
-              >
-                {editingCell &&
-                editingCell.row === idx &&
-                editingCell.col === "practice_name" ? (
-                  <input
-                    type="text"
-                    value={cellInput}
-                    autoFocus
-                    onChange={handleCellInputChange}
-                    onBlur={() => handleCellInputBlur(idx, "practice_name")}
-                    onKeyDown={(e) => handleCellInputKeyDown(e)}
-                    style={{ width: "90%" }}
-                    data-testid={`cell-input-${idx}-practice_name`}
-                  />
-                ) : (
-                  provider.practice_name
-                )}
-              </div>
-            </div>
-          </div>
-        </td>
-      </tr>
-    );
   }
 
   return (
