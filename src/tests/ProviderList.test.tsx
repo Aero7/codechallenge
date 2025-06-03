@@ -2,7 +2,6 @@ import "@testing-library/jest-dom";
 import { render, fireEvent, screen } from "@testing-library/react";
 import ProviderList from "../components/ProviderList";
 import sampleProviders from "../assets/sample-data.json";
-import { UNIQUE_SAMPLE_PROVIDERS } from "../constants";
 import userEvent from "@testing-library/user-event";
 
 describe("ProviderList", () => {
@@ -317,7 +316,7 @@ describe("ProviderList", () => {
     expect(updatedProviders[0].last_name).toBe("EditedLast");
   });
 
-  it("cancels editing on Escape key", async () => {
+  it("cancels editing and does not save changes when Escape is pressed in edit cell", async () => {
     const user = userEvent.setup();
     const onUpdateProviders = jest.fn();
     render(
@@ -330,21 +329,21 @@ describe("ProviderList", () => {
     // Switch to table view
     fireEvent.click(screen.getByTestId("toggle-view-btn"));
 
-    // Double click the first provider's specialty cell
-    const cell = screen.getByTestId("cell-0-specialty");
+    // Double click the first provider's first_name cell
+    const cell = screen.getByTestId("cell-0-first_name");
     await user.dblClick(cell);
 
-    // Should show input
-    const input = screen.getByTestId("cell-input-0-specialty");
+    // Should show input with current value
+    const input = screen.getByTestId("cell-input-0-first_name");
     expect(input).toBeInTheDocument();
 
-    // Press Escape
+    // Change value but press Escape instead of blur
+    await user.clear(input);
+    await user.type(input, "ShouldNotSave");
     fireEvent.keyDown(input, { key: "Escape", code: "Escape" });
 
-    // Input should disappear, onUpdateProviders should not be called
-    expect(
-      screen.queryByTestId("cell-input-0-specialty")
-    ).not.toBeInTheDocument();
+    // Input should disappear and onUpdateProviders should NOT be called
+    expect(screen.queryByTestId("cell-input-0-first_name")).not.toBeInTheDocument();
     expect(onUpdateProviders).not.toHaveBeenCalled();
   });
 });

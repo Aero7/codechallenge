@@ -28,7 +28,7 @@ After running the commands, open your broswer to http://localhost:5173/
 
 ### Inline Edit
 
-All fields in both the Provider list and table views are editable with a double click and can be saved by pressing enter/esc or clicking out of the text box
+All fields in both the Provider list and table views are editable with a double click and valid input can be saved by pressing the enter key. Pressing the escape key will cancel the pending changes
 
 ### Data Persistence
 

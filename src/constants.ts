@@ -1,5 +1,13 @@
 import type { ProviderData } from "./App";
 
+export const PROVIDER_INPUT_REGEXS: Record<keyof ProviderData, RegExp> = {
+  first_name: /^[a-zA-Z\s'-]{2,}$/,
+  last_name: /^[a-zA-Z\s'-]{2,}$/,
+  email_address: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+  specialty: /^[a-zA-Z\s'-]{2,}$/,
+  practice_name: /^.{2,}$/,
+};
+
 export const PROVIDER_INPUT_ERROR_MESSAGES = {
   first_name: "Enter a valid first name (required, min 2 letters)",
   last_name: "Enter a valid last name (required, min 2 letters)",

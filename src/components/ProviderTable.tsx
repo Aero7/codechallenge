@@ -1,5 +1,10 @@
 import type { ProviderData } from "../App";
-import { PROVIDER_FIELD_TITLES } from "../constants";
+import {
+  PROVIDER_FIELD_TITLES,
+  PROVIDER_INPUT_ERROR_MESSAGES,
+  PROVIDER_INPUT_REGEXS,
+} from "../constants";
+import RegexInput from "./RegexInput";
 import type { ProviderViewProps } from "./ProviderList";
 
 export default function ProviderTable({
@@ -79,15 +84,21 @@ export default function ProviderTable({
                 {editingCell &&
                 editingCell.row === idx &&
                 editingCell.col === col ? (
-                  <input
-                    type="text"
+                  <RegexInput
+                    field={col}
                     value={cellInput}
-                    autoFocus
-                    onChange={handleCellInputChange}
+                    onChange={(val) =>
+                      handleCellInputChange({
+                        target: { value: val },
+                      } as React.ChangeEvent<HTMLInputElement>)
+                    }
+                    regex={PROVIDER_INPUT_REGEXS[col]}
+                    errorMessage={PROVIDER_INPUT_ERROR_MESSAGES[col]}
+                    placeholder={PROVIDER_FIELD_TITLES[col]}
                     onBlur={() => handleCellInputBlur(idx, col)}
-                    onKeyDown={handleCellInputKeyDown}
-                    style={{ width: "95%" }}
-                    data-testid={`cell-input-${idx}-${col}`}
+                    onKeyDown={(e) => handleCellInputKeyDown(e, col)}
+                    dataTestId={`cell-input-${idx}-${col}`}
+                    usePopover
                   />
                 ) : (
                   provider[col]

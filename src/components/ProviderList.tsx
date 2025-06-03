@@ -1,7 +1,7 @@
 import { useState } from "react";
 import RegexInput from "./RegexInput";
 import type { ProviderData } from "../App";
-import { PROVIDER_FIELD_TITLES } from "../constants";
+import { PROVIDER_FIELD_TITLES, PROVIDER_INPUT_REGEXS } from "../constants";
 import ProviderListView from "./ProviderListView";
 import ProviderTable from "./ProviderTable";
 
@@ -30,7 +30,10 @@ export interface ProviderViewProps {
   ) => void;
   handleCellInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleCellInputBlur: (rowIdx: number, col: keyof ProviderData) => void;
-  handleCellInputKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  handleCellInputKeyDown: (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    col: keyof ProviderData
+  ) => void;
 }
 
 export default function ProviderList({
@@ -121,18 +124,23 @@ export default function ProviderList({
   }
 
   function handleCellInputBlur(rowIdx: number, col: keyof ProviderData) {
-    if (cellInput.trim() !== providers[rowIdx][col]) {
-      const updatedProviders = providers.map((p, idx) =>
-        idx === rowIdx ? { ...p, [col]: cellInput } : p
-      );
-      onUpdateProviders(updatedProviders);
+    if (PROVIDER_INPUT_REGEXS[col].test(cellInput)) {
+      if (cellInput.trim() !== providers[rowIdx][col]) {
+        const updatedProviders = providers.map((p, idx) =>
+          idx === rowIdx ? { ...p, [col]: cellInput } : p
+        );
+        onUpdateProviders(updatedProviders);
+      }
+      setEditingCell(null);
     }
-    setEditingCell(null);
   }
 
   function handleCellInputKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key === "Enter" || e.key === "Escape") {
+    if (e.key === "Enter") {
       (e.target as HTMLInputElement).blur();
+    } else if (e.key === "Escape") {
+      setEditingCell(null);
+      setCellInput("");
     }
   }
 

@@ -49,4 +49,58 @@ describe("RegexInput", () => {
     fireEvent.blur(input);
     expect(screen.queryByTestId("error-message-input")).toBeNull();
   });
+
+  it("calls onBlur when input is blurred", () => {
+    const handleBlur = jest.fn();
+    render(
+      <RegexInput value="abc" onChange={() => {}} onBlur={handleBlur} />
+    );
+    const input = screen.getByTestId("regex-input");
+    fireEvent.blur(input);
+    expect(handleBlur).toHaveBeenCalled();
+  });
+
+  it("calls onKeyDown when key is pressed", () => {
+    const handleKeyDown = jest.fn();
+    render(
+      <RegexInput value="abc" onChange={() => {}} onKeyDown={handleKeyDown} />
+    );
+    const input = screen.getByTestId("regex-input");
+    fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+    expect(handleKeyDown).toHaveBeenCalled();
+  });
+
+  it("shows error as a popover when usePopover is true", () => {
+    const handleChange = jest.fn();
+    render(
+      <RegexInput
+        value="123"
+        onChange={handleChange}
+        regex={/^[a-zA-Z]+$/}
+        errorMessage="Only letters allowed"
+        usePopover
+      />
+    );
+    const input = screen.getByTestId("regex-input");
+    fireEvent.blur(input);
+    expect(screen.getByTestId("popover-error-input")).toHaveTextContent(
+      "Only letters allowed"
+    );
+  });
+
+  it("does not show popover error if input is valid with usePopover", () => {
+    const handleChange = jest.fn();
+    render(
+      <RegexInput
+        value="abc"
+        onChange={handleChange}
+        regex={/^[a-zA-Z]+$/}
+        errorMessage="Only letters allowed"
+        usePopover
+      />
+    );
+    const input = screen.getByTestId("regex-input");
+    fireEvent.blur(input);
+    expect(screen.queryByTestId("popover-error-input")).toBeNull();
+  });
 });
