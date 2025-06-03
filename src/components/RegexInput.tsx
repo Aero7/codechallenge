@@ -54,9 +54,7 @@ const RegexInput: React.FC<RegexInputProps> = ({
       <input
         ref={inputRef}
         type="text"
-        className={`form-control${
-          !isValid && touched && !usePopover ? " is-invalid" : ""
-        }`}
+        className="form-control"
         value={value}
         placeholder={placeholder}
         aria-label={placeholder}
